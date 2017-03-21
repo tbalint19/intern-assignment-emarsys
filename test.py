@@ -57,7 +57,12 @@ class AllTests(unittest.TestCase):
     def test_forking_can_return_fragment(self):
         self.planner = Planner([self.u, self.z, self.w, self.v, self.x, self.y, self.a, self.b])
         data = self.planner.get_route_data()
-        self.assertTrue("zw" in data['fragment'] and "wv" in data['fragment'] and "ux" in data['fragment'] and "vy" in data['fragment'])
+        print(data['fragment'])
+        self.assertTrue(
+            "zw" in data['fragment'] and
+            "wv" in data['fragment'] and
+            "ux" in data['fragment'] and
+            ("vy" in data['fragment'] or "va" in data['fragment'] or "vb" in data['fragment']))
 
     def test_forking_returns_error(self):
         self.planner = Planner([self.u, self.z, self.w, self.v, self.x, self.y, self.a, self.b])

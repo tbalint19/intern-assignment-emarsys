@@ -10,24 +10,23 @@ class Planner:
 
     def create_route(self):
         self.planned_route = Route()
-        while len(self.unlocated_stops) > 0:
-            current_stop = self.planned_route.get_last()
-            next_stop = self.get_next_stop(current_stop)
-            if self.error_happened:
-                break
-            self.planned_route.stops.append(next_stop)
-            self.unlocated_stops.remove(next_stop)
+        self.error_happened = self.recursive_attach_to_route_from_unlocated()
 
-    def get_next_stop(self, current_stop):
+    def recursive_attach_to_route_from_unlocated(self):
+        current_stop = self.planned_route.get_last()
         stop_with_no_previous = None
         for examined_stop in self.unlocated_stops:
             if examined_stop.previous == current_stop:
-                return examined_stop
+                self.planned_route.stops.append(examined_stop)
+                self.unlocated_stops.remove(examined_stop)
+                return self.recursive_attach_to_route_from_unlocated()
             if examined_stop.previous is None and stop_with_no_previous is None:
                 stop_with_no_previous = examined_stop
         if stop_with_no_previous is None:
-            self.error_happened = True
-        return stop_with_no_previous
+            return len(self.unlocated_stops) > 0
+        self.planned_route.stops.append(stop_with_no_previous)
+        self.unlocated_stops.remove(stop_with_no_previous)
+        return self.recursive_attach_to_route_from_unlocated()
 
     def get_route(self):
         if not self.error_happened:
